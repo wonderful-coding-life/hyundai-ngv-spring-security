@@ -14,6 +14,5 @@
 ---
 
 TODO
-> custom login/logout form
-> jwt
-> cors
+* jwt  
+* cors
