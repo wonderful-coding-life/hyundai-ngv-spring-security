@@ -10,3 +10,10 @@
 1. `starter` 폴더를 IntelliJ에서 엽니다.
 2. 강의를 따라 코드를 작성합니다.
 3. 막히면 `completion`과 비교합니다.
+
+---
+
+TODO
+> custom login/logout form
+> jwt
+> cors

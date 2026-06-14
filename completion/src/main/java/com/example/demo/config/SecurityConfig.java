@@ -54,17 +54,27 @@ public class SecurityConfig {
     SecurityFilterChain mvcSecurityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
-                        // 상품 조회 화면은 누구나 접근 가능
+                        // 상품 조회 화면은 누구나 가능
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/product", "/product/list").permitAll()
-                        // 상품 등록/수정/삭제 화면은 관리자만 접근 가능
+                        // 상품 등록/수정/삭제 화면은 관리자만 가능
                         .requestMatchers("/product/add").hasAuthority("ADMIN")
                         .requestMatchers("/product/edit").hasAuthority("ADMIN")
                         .requestMatchers("/product/delete").hasAuthority("ADMIN")
-                        // 그 외 화면은 로그인한 사용자만 접근 가능
+                        // 정적 리소스는 누구나 가능
+                        .requestMatchers("/css/**", "/js/**", "/image/**").permitAll()
+                        // 그 외 화면은 로그인한 사용자만 가능
                         .anyRequest().authenticated()
                 )
-                .formLogin(Customizer.withDefaults())
+                //.formLogin(Customizer.withDefaults())
+                .formLogin(login -> login
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/")
+                        .permitAll()) // 로그인 페이지는 누구나 접근 가능
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/")
+                        .permitAll()) // 로그아웃 요청과 성공 후 이동 URL은 누구나 접근 가능
                 .build();
     }
 
