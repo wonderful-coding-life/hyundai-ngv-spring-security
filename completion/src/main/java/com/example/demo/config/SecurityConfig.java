@@ -55,12 +55,12 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(auth -> auth
                         // 상품 조회 화면은 누구나 접근 가능
-                        .requestMatchers("/product/list").permitAll()
-                        .requestMatchers("/product").permitAll()
+                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/product", "/product/list").permitAll()
                         // 상품 등록/수정/삭제 화면은 관리자만 접근 가능
-                        .requestMatchers("/product/add").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("/product/edit").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("/product/delete").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/product/add").hasAuthority("ADMIN")
+                        .requestMatchers("/product/edit").hasAuthority("ADMIN")
+                        .requestMatchers("/product/delete").hasAuthority("ADMIN")
                         // 그 외 화면은 로그인한 사용자만 접근 가능
                         .anyRequest().authenticated()
                 )
