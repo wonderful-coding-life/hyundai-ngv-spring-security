@@ -1,21 +1,37 @@
 package com.example.demo.config;
 
 import com.example.demo.repository.MemberRepository;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 
 @Configuration
 public class SecurityConfig {
@@ -38,14 +54,21 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/products").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products/*").permitAll()
                         // 상품 등록/수정/삭제 API는 관리자만 호출 가능
-                        .requestMatchers(HttpMethod.POST, "/api/products").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/products/*").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/products/*").hasAuthority("ADMIN")
+                        // Basic Authentication은 ADMIN 권한을 사용하고,
+                        // JWT Authentication은 scope 클레임이 SCOPE_ADMIN 권한으로 변환된다.
+                        .requestMatchers(HttpMethod.POST, "/api/products").hasAnyAuthority("ADMIN", "SCOPE_ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/products/*").hasAnyAuthority("ADMIN", "SCOPE_ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/products/*").hasAnyAuthority("ADMIN", "SCOPE_ADMIN")
+                        // 사용자 인증 후 JWT Access Token 발급
+                        .requestMatchers(HttpMethod.POST, "/api/tokens").permitAll()
                         // 위에서 정의하지 않은 API 요청은 모두 거부
                         .anyRequest().denyAll()
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(Customizer.withDefaults())
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(Customizer.withDefaults())  // JWT로 인증
+                )
                 .build();
     }
 
@@ -88,5 +111,30 @@ public class SecurityConfig {
                     .authorities(member.getAuthority())
                     .build();
         };
+    }
+
+    // JWT
+
+    @Bean
+    AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) {
+        return configuration.getAuthenticationManager();
+    }
+
+    @Value("${jwt.public.key}")
+    RSAPublicKey publicKey;
+
+    @Value("${jwt.private.key}")
+    RSAPrivateKey privateKey;
+
+    @Bean
+    JwtDecoder jwtDecoder() {
+        return NimbusJwtDecoder.withPublicKey(publicKey).build();
+    }
+
+    @Bean
+    JwtEncoder jwtEncoder() {
+        JWK jwk = new RSAKey.Builder(publicKey).privateKey(privateKey).build();
+        JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
+        return new NimbusJwtEncoder(jwks);
     }
 }

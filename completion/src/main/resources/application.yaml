@@ -4,3 +4,8 @@ spring:
   h2:
     console:
       enabled: true
+jwt:
+  private:
+    key: file:${user.home}/.jwt/app.key
+  public:
+    key: file:${user.home}/.jwt/app.pub
