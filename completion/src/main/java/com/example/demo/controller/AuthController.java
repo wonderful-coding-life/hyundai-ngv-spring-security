@@ -66,8 +66,7 @@ public class AuthController {
          * Refresh Token을 함께 사용하는 경우에는 Refresh Token의 수명을 더 길게 설정한다.
          *
          * scope 클레임에는 공백으로 구분된 권한 목록을 저장한다.
-         * Resource Server는 scope 값을 GrantedAuthority로 변환하며,
-         * 기본적으로 SCOPE_ 접두사를 추가한다.
+         * Resource Server는 scope 값을 GrantedAuthority로 변환하며, 이때 기본적으로 SCOPE_ 접두사를 추가한다.
          * 예) scope=ADMIN → SCOPE_ADMIN
          */
         JwtClaimsSet claims = JwtClaimsSet.builder()
