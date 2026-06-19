@@ -2,19 +2,34 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.Product;
 import com.example.demo.repository.ProductRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
+@Slf4j
 public class ProductApiController {
     @Autowired
     private ProductRepository productRepository;
 
     @GetMapping("/version")
-    public String getVersion() {
+    public String getVersion(Authentication authentication) {
+        if (authentication != null) {
+            log.info("name {}", authentication.getName());
+            log.info("authorities {}", authentication
+                    .getAuthorities()
+                    .stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.joining(" ")));
+        } else {
+            log.info("authentication null");
+        }
         return "1.0.0";
     }
 
