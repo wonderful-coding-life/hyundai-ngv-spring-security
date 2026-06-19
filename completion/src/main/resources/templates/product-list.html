@@ -7,9 +7,6 @@
     <title>상품 목록</title>
 </head>
 <body>
-<div sec:authorize="isAuthenticated()" sec:authentication="principal.username">회원이름</div>
-<div sec:authorize="isAnonymous()"><a th:href="@{/login}">로그인</a></div>
-<div sec:authorize="isAuthenticated()"><a th:href="@{/logout}">로그아웃</a></div>
 <table>
     <tr th:object="${product}" th:each="product : ${products}">
         <td th:text="*{id}">100</td>
@@ -19,6 +16,6 @@
         <td sec:authorize="hasAuthority('ADMIN')"><a th:href="@{/product/delete(id=*{id})}">삭제</a></td>
     </tr>
 </table>
-<a sec:authorize="hasAuthority('ADMIN')" th:href="@{/product/add}">추가</a>
+<a th:href="@{/}">홈</a>
 </body>
 </html>

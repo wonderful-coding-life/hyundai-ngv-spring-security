@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class HomeController {
     @GetMapping
     public String getHome() {
-        return "redirect:/product/list";
+        return "home";
     }
 
     @GetMapping("/login")

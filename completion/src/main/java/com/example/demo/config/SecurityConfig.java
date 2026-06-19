@@ -49,9 +49,10 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // 상품 조회 API는 누구나 호출 가능
-                        .requestMatchers(HttpMethod.GET, "/api/products").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/products/*").permitAll()
+                        // 버전 정보는 누구나 호출 가능
+                        .requestMatchers(HttpMethod.GET, "/api/version").permitAll()
+                        // 상품 조회 인증된 사용자만 호출 가능
+                        .requestMatchers(HttpMethod.GET, "/api/products").authenticated()
                         // 상품 등록/수정/삭제 API는 관리자만 호출 가능
                         // Basic Authentication은 ADMIN 권한을 사용하고,
                         // JWT Authentication은 scope 클레임이 SCOPE_ADMIN 권한으로 변환된다.
@@ -76,9 +77,10 @@ public class SecurityConfig {
     SecurityFilterChain mvcSecurityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
-                        // 상품 조회 화면은 누구나 가능
+                        // 홈 화면은 누구나 가능
                         .requestMatchers("/").permitAll()
-                        .requestMatchers("/product", "/product/list").permitAll()
+                        // 상품 조회는 인증된 사용자만 가능
+                        .requestMatchers("/product/list").authenticated()
                         // 상품 등록/수정/삭제 화면은 관리자만 가능
                         .requestMatchers("/product/add").hasAuthority("ADMIN")
                         .requestMatchers("/product/edit").hasAuthority("ADMIN")

@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/completion.main.iml" filepath="$PROJECT_DIR$/.idea/modules/completion.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/completion.test.iml" filepath="$PROJECT_DIR$/.idea/modules/completion.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/spring-security.iml" filepath="$PROJECT_DIR$/.idea/spring-security.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/starter.main.iml" filepath="$PROJECT_DIR$/.idea/modules/starter.main.iml" />
     </modules>
   </component>
 </project>

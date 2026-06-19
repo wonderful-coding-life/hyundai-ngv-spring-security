@@ -13,6 +13,11 @@ public class ProductApiController {
     @Autowired
     private ProductRepository productRepository;
 
+    @GetMapping("/version")
+    public String getVersion() {
+        return "1.0.0";
+    }
+
     @GetMapping("/products")
     public List<Product> getProducts() {
         return productRepository.findAll();
