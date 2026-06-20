@@ -56,9 +56,9 @@ public class SecurityConfig {
                         // 상품 등록/수정/삭제 API는 관리자만 호출 가능
                         // Basic Authentication은 ADMIN 권한을 사용하고,
                         // JWT Authentication은 scope 클레임이 SCOPE_ADMIN 권한으로 변환된다.
-                        .requestMatchers(HttpMethod.POST, "/api/products").hasAnyAuthority("ADMIN", "SCOPE_ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/products/*").hasAnyAuthority("ADMIN", "SCOPE_ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/products/*").hasAnyAuthority("ADMIN", "SCOPE_ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/products").hasAnyAuthority("ROLE_ADMIN", "SCOPE_ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/products/*").hasAnyAuthority("ROLE_ADMIN", "SCOPE_ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/products/*").hasAnyAuthority("ROLE_ADMIN", "SCOPE_ROLE_ADMIN")
                         // 사용자 인증 후 JWT Access Token 발급
                         .requestMatchers(HttpMethod.POST, "/api/tokens").permitAll()
                         // 위에서 정의하지 않은 API 요청은 모두 거부
@@ -82,9 +82,9 @@ public class SecurityConfig {
                         // 상품 조회는 인증된 사용자만 가능
                         .requestMatchers("/product/list").authenticated()
                         // 상품 등록/수정/삭제 화면은 관리자만 가능
-                        .requestMatchers("/product/add").hasAuthority("ADMIN")
-                        .requestMatchers("/product/edit").hasAuthority("ADMIN")
-                        .requestMatchers("/product/delete").hasAuthority("ADMIN")
+                        .requestMatchers("/product/add").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/product/edit").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/product/delete").hasAuthority("ROLE_ADMIN")
                         // 정적 리소스는 누구나 가능
                         .requestMatchers("/css/**", "/js/**", "/image/**").permitAll()
                         // 그 외 화면은 로그인한 사용자만 가능

@@ -38,11 +38,6 @@ public class ProductApiController {
         return productRepository.findAll();
     }
 
-    @GetMapping("/products/{id}")
-    public Product getProduct(@PathVariable Long id) {
-        return productRepository.findById(id).orElseThrow();
-    }
-
     @PostMapping("/products")
     public Product postProduct(@RequestBody Product product) {
         return productRepository.save(product);

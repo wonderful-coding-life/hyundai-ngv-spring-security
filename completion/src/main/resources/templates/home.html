@@ -15,6 +15,6 @@
     <a th:href="@{/login}">로그인</a>
 </div>
 <a th:href="@{/product/list}">상품목록</a><br>
-<a sec:authorize="hasAuthority('ADMIN')" th:href="@{/product/add}">상품추가</a>
+<a sec:authorize="hasAuthority('ROLE_ADMIN')" th:href="@{/product/add}">상품추가</a>
 </body>
 </html>

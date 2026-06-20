@@ -12,8 +12,8 @@
         <td th:text="*{id}">100</td>
         <td th:text="*{name}">iPhone</td>
         <td th:text="*{price}">1,200,000</td>
-        <td sec:authorize="hasAuthority('ADMIN')"><a th:href="@{/product/edit(id=*{id})}">수정</a></td>
-        <td sec:authorize="hasAuthority('ADMIN')"><a th:href="@{/product/delete(id=*{id})}">삭제</a></td>
+        <td sec:authorize="hasAuthority('ROLE_ADMIN')"><a th:href="@{/product/edit(id=*{id})}">수정</a></td>
+        <td sec:authorize="hasAuthority('ROLE_ADMIN')"><a th:href="@{/product/delete(id=*{id})}">삭제</a></td>
     </tr>
 </table>
 <a th:href="@{/}">홈</a>
