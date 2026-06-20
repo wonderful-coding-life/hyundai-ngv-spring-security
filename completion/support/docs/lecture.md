@@ -199,7 +199,7 @@ PasswordEncoder passwordEncoder() {
 ```java
 .name("kwangcheol")
 .password(passwordEncoder.encode("12345678"))
-.authority("ROLE_ADMIN")
+.authority("ROLE_USER, ROLE_ADMIN")
 ```
 
 - 저장: 원문 패스워드 → 단방향 해시
@@ -221,11 +221,13 @@ UserDetailsService userDetailsService(
             .orElseThrow(() ->
                 new UsernameNotFoundException(username));
 
+        var authorities = Arrays.stream(member.getAuthorities().split(",")).map(String::trim).toArray(String[]::new);
+        
         return User.builder()
-            .username(member.getName())
-            .password(member.getPassword())
-            .authorities(member.getAuthority())
-            .build();
+                .username(member.getName())
+                .password(member.getPassword())
+                .authorities(authorities)
+                .build();
     };
 }
 ```
@@ -520,6 +522,12 @@ SecurityFilterChain mvcSecurityFilterChain(HttpSecurity http) {
 
 ---
 
+# HTTP Basic Authentication 동작 방식
+
+HTTP Basic Authentication은 사용자 이름(username)과 비밀번호(password)를 username:password 형식으로 결합한 뒤 Base64로 인코딩하여 HTTP 헤더에 포함하는 인증 방식
+
+> 예) Authorization: Basic dXNlcjoxMjM0
+
 # Basic Authentication으로 먼저 확인
 
 ```bash
@@ -541,7 +549,7 @@ curl -i -u seojun:12345678 \
 ```
 
 - Basic 인증은 매 요청에 사용자 이름과 패스워드를 전달한다.
-- 반드시 HTTPS와 함께 사용해야 한다.
+- 반드시 HTTPS와 함께 사용해야 한다. Base64는 암호화 방식이 아니다.
 - 인증 파이프라인과 인가 규칙을 빠르게 검증하기 좋다.
 
 ---

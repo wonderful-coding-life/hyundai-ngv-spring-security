@@ -20,5 +20,5 @@ public class Member {
     private Long id;
     private String name;
     private String password;
-    private String authority;
+    private String authorities; // "ROLE_USER, ROLE_ADMIN"...
 }

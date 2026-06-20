@@ -25,6 +25,7 @@
       <module name="com.example.demo" options="-parameters" />
       <module name="com.example.demo.main" options="-parameters" />
       <module name="com.example.demo.test" options="-parameters" />
+      <module name="com.example.starter.main" options="-parameters" />
       <module name="completion" options="-parameters" />
       <module name="completion.main" options="-parameters" />
       <module name="completion.test" options="-parameters" />

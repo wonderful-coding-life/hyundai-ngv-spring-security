@@ -17,6 +17,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -31,6 +32,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Arrays;
 
 @Configuration
 public class SecurityConfig {
@@ -95,6 +97,7 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .defaultSuccessUrl("/")
                         .permitAll()) // 로그인 페이지는 누구나 접근 가능
+                //.logout(Customizer.withDefaults())
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/")
@@ -106,10 +109,11 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService(MemberRepository memberRepository) {
         return username -> {
             var member = memberRepository.findByName(username).orElseThrow(() -> new UsernameNotFoundException(username));
+            var authorities = Arrays.stream(member.getAuthorities().split(",")).map(String::trim).toArray(String[]::new);
             return User.builder()
                     .username(member.getName())
                     .password(member.getPassword())
-                    .authorities(member.getAuthority())
+                    .authorities(authorities)
                     .build();
         };
     }
