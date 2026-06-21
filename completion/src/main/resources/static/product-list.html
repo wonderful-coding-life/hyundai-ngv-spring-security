@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>상품 목록</title>
+</head>
+<body>
+<main id="login">
+    <h1>로그인</h1>
+    <form id="login-form">
+        <input id="username" type="text" placeholder="아이디" required><br>
+        <input id="password" type="password" placeholder="패스워드" required>
+        <button type="submit">로그인</button>
+    </form>
+    <p id="error"></p>
+</main>
+
+<main id="products" hidden>
+    <h1>상품 목록</h1>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>상품명</th>
+            <th>가격</th>
+        </tr>
+        </thead>
+        <tbody id="product-list"></tbody>
+    </table>
+    <button id="logout" type="button">로그아웃</button>
+</main>
+
+<script>
+    const apiUrl = "http://localhost:8080/api/products";
+    const login = document.querySelector("#login");
+    const products = document.querySelector("#products");
+    const error = document.querySelector("#error");
+
+    document.querySelector("#login-form").addEventListener("submit", async event => {
+        event.preventDefault();
+
+        const username = document.querySelector("#username").value;
+        const password = document.querySelector("#password").value;
+
+        try {
+            const response = await fetch(apiUrl, {
+                headers: {
+                    Authorization: "Basic " + btoa(username + ":" + password)
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error("로그인에 실패했습니다. (" + response.status + ")");
+            }
+
+            const productList = await response.json();
+            document.querySelector("#product-list").innerHTML = productList.map(product => `
+                <tr>
+                    <td>${product.id}</td>
+                    <td>${product.name}</td>
+                    <td>${product.price.toLocaleString()}</td>
+                </tr>
+            `).join("");
+
+            error.textContent = "";
+            login.hidden = true;
+            products.hidden = false;
+        } catch (e) {
+            error.textContent = e.message;
+        }
+    });
+
+    document.querySelector("#logout").addEventListener("click", () => {
+        document.querySelector("#login-form").reset();
+        document.querySelector("#product-list").innerHTML = "";
+        products.hidden = true;
+        login.hidden = false;
+    });
+</script>
+</body>
+</html>
