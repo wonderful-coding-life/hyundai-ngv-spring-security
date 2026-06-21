@@ -1,8 +1,6 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.LoginRequest;
-import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
-import java.util.stream.Collectors;
 
 @RestController
 public class AuthController {
@@ -53,19 +50,16 @@ public class AuthController {
         );
 
         /*
-         * Spring Security는 scope 클레임의 공백으로 구분된 값을
-         * GrantedAuthority로 변환한다.
-         * 따라서 권한 목록을 공백으로 연결하여 scope 클레임을 생성한다.
+         * Spring Security는 scope 클레임의 공백으로 구분되거나
+         * 배열로 정의된 scope 들을 GrantedAuthority로 변환한다.
          */
-        String scope = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(" "));
+        var scopes = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
 
         /*
          * Access Token은 탈취에 대비하여 수명을 짧게 설정하는 것이 일반적이다.
          * Refresh Token을 함께 사용하는 경우에는 Refresh Token의 수명을 더 길게 설정한다.
          *
-         * scope 클레임에는 공백으로 구분된 권한 목록을 저장한다.
+         * scope 클레임에는 권한 목록을 저장한다.
          * Resource Server는 scope 값을 GrantedAuthority로 변환하며, 이때 기본적으로 SCOPE_ 접두사를 추가한다.
          * 예) scope=ADMIN → SCOPE_ADMIN
          */
@@ -74,7 +68,7 @@ public class AuthController {
                 .issuedAt(Instant.now())
                 .expiresAt(Instant.now().plusSeconds(3600))
                 .subject(authentication.getName())
-                .claim("scope", scope)
+                .claim("scope", scopes)
                 .build();
         return this.encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
